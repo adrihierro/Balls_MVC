@@ -20,7 +20,7 @@ public class Model {
         return balls;
     }
 
-    // ---------- Crear bola normal ----------
+
     public void addBall(int x, int y, int vx, int vy, int radius,
                         int viewerWidth, int viewerHeight, PhysicEngineInterface motor) {
         Ball ball = new Ball(x, y, vx, vy, radius, viewerWidth, viewerHeight, this, motor);
@@ -48,3 +48,4 @@ public class Model {
         return player;
     }
 }
+
