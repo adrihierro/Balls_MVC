@@ -1,73 +1,84 @@
 package controller;
 
 import model.*;
-import vista.*;
+import physicsBall.PhysicsBallDTO;
+import vista.BallRenderInfoDTO;
+import vista.Vista;
+import model.Events;
 
-import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Controller {
     private final Model model;
     private final Vista vista;
 
     public Controller() {
-        this.vista = new Vista();
-        this.model = new Model();
+        this.vista = new Vista(this);
+        this.model = new Model(this);
 
-        connectListeners();
-        syncWorkspaceDimensions();
+        Listeners();
         vista.display();
     }
 
-    private void connectListeners() {
-        vista.addNewPelotaListener(e -> {
-            syncWorkspaceDimensions();
-            HandleAddBall();
+    private void Listeners() {
+        vista.addNewPelotaListener(e -> HandleAddBall());
+
+        vista.RestartListener(e -> {});
+
+        vista.PauseListener(e -> {
+            model.setState(State.Paused);
         });
 
-        vista.addnewPauseListener(e -> model.pause());
-
-        vista.addNewPlayListener(e -> {
-            handlePlay();
+        vista.startListener(e -> {
+            model.setState(State.Started);
         });
 
-        vista.addNewRestartlistener(e -> {
-            HandleRestart();
-        });
-
-        vista.generatePJ1(e -> {
-            Player player = model.generatePlayer();
-            vista.setPlayer(player.getPhysics());
+        vista.RestartListener(e -> {
+            model.setState(State.Restart);
+            model.Restart();
         });
     }
 
     private void HandleAddBall(){
         model.createRandomBall();
-        refreshView();
-    }
-
-    private void HandleRestart(){
-        model.clearBalls();
-        vista.setPlayerModeActive(false);
-        refreshView();
-    }
-
-    private void handlePlay(){
-        model.play();
-    }
-
-    private void syncWorkspaceDimensions() {
-        int width = vista.getViewerWidth();
-        int height = vista.getViewerHeight();
-        model.setWorkspaceDimensions(width, height);
-    }
-
-    private void refreshView() {
-        vista.mostrarPelotas(model.getBalls());
         updateNumPelotas();
     }
 
+    public void updateWorkspaceSize(int width, int height) {
+        model.setWorkspaceDimensions(width, height);
+    }
+
+    public List<BallRenderInfoDTO> getBallRenderables() {
+        List<BallRenderInfoDTO> renderBalls = new ArrayList<>();
+        List<PhysicsBallDTO> physicsBalls = model.getBalls();
+
+        for (PhysicsBallDTO dto : physicsBalls) {
+            renderBalls.add(new BallRenderInfoDTO(
+                    (int) dto.x,
+                    (int) dto.y,
+                    dto.radius
+            ));
+        }
+
+        return renderBalls;
+    }
+
+
+    public void eventManager(Events events){
+
+        switch (events){
+            case West_Reached -> System.out.println("West reached");
+            case North_Reached -> System.out.println("North reached");
+            case East_Reached -> System.out.println("East reached");
+            case South_Reached -> System.out.println("South reached");
+        }
+    }
+
+
     private void updateNumPelotas() {
         int numPelotas = model.getBalls().size();
-        vista.updateNumPelotas(numPelotas);
+        vista.updatePelotas(numPelotas);
     }
+
 }

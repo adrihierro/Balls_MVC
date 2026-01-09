@@ -17,7 +17,7 @@ public class SpriteManager {
                 .getDefaultConfiguration();
 
         Image player = new ImageIcon(getClass().getResource("/Images/Assets/spaceship-1.png")).getImage();
-        Image background = new ImageIcon(getClass().getResource("/Images/Assets/background-space.png")).getImage();
+        Image background = new ImageIcon(getClass().getResource("/Images/Assets/background-space.jpg")).getImage();
 
         // Crear VolatileImage con transparencia adecuada
         playerIMG = gc.createCompatibleVolatileImage(player.getWidth(null), player.getHeight(null), Transparency.TRANSLUCENT);

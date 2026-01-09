@@ -1,28 +1,35 @@
 package model;
 
+import controller.Controller;
+import controller.State;
 import physicsBall.BasicPhysicsEngine;
 import physicsBall.PhysicEngineInterface;
 import physicsBall.PhysicsBallDTO;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+
 
 public class Model {
-    private List<PhysicsBallDTO> balls;
-    private Player player;
-    private boolean paused;
+    private List<Ball> balls = new ArrayList<>();
     private int workspaceWidth;
     private int workspaceHeight;
+    private final Controller controller;
+    PhysicEngineInterface motor = new BasicPhysicsEngine();
+    private State state;
 
-    public Model() {
-        this.balls = new CopyOnWriteArrayList<>();
+
+    public Model(Controller controller) {
+        this.controller = controller;
+        setState(State.Started);
     }
-
 
     public void setWorkspaceDimensions(int width, int height) {
         this.workspaceWidth = width;
         this.workspaceHeight = height;
     }
+
 
     public int getWorkspaceWidth() {
         return workspaceWidth;
@@ -32,57 +39,65 @@ public class Model {
         return workspaceHeight;
     }
 
-    public List<PhysicsBallDTO> getBalls() {
-        return balls;
+    public void setState(State state){
+        this.state = state;
     }
 
+    public State getState(){
+        return state;
+    }
+
+    public List<PhysicsBallDTO> getBalls() {
+        List<PhysicsBallDTO> result = new ArrayList<>();
+
+        for (Ball b : balls){
+            result.add(b.getPhysics());
+        }
+
+        return result;
+    }
 
     public void createRandomBall() {
         int x = (int) (Math.random() * workspaceWidth);
-        int y = (int) (Math.random() * workspaceHeight);
+        int y = (int) (Math.random() * workspaceHeight);;
         int vx = (int) (Math.random() * 5 + 1);  // velocidad entre 1 y 5
         int vy = (int) (Math.random() * 5 + 1);
         int radius = (int) (Math.random() * 16) + 5;  // radio entre 5 y 20
 
-        PhysicEngineInterface motor = new BasicPhysicsEngine();
-
         addBall(x, y, vx, vy, radius, motor);
-    }
 
+    }
 
     // ---------- Crear bola normal ----------
     private void addBall(int x, int y, int vx, int vy, int radius,
                          PhysicEngineInterface motor) {
         Ball ball = new Ball(x, y, vx, vy, radius, this, motor);
-        balls.add(ball.getPhysics());
+        balls.add(ball);
     }
 
-    public void pause() {
-        this.paused = true;
+    public void Restart(){
+        if (state == state.Restart) {
+            balls.clear();
+            state = state.Started;
+        }
     }
 
-    public void play() {
-        this.paused = false;
-    }
+    public void eventDetector(PhysicsBallDTO physicsBallDTO){
 
-    public boolean isPaused() {
-        return paused;
-    }
+        int diameter = physicsBallDTO.radius * 2;
 
-    //Crear el jugador controlable
-    public Player generatePlayer(){
-        int startx = 100;
-        int starty = 100;
-        int radius = 20;
-        this.player = new Player(startx,starty,radius);
-        return player;
-    }
 
-    public void clearBalls() {
-        balls.clear();
-    }
+        if (physicsBallDTO.x <= 0){
+           controller.eventManager(Events.West_Reached);
+        } else if (physicsBallDTO.x + diameter >= workspaceWidth) {
+            controller.eventManager(Events.East_Reached);
+        }
 
-    public int getBallCount() {
-        return balls.size();
+        if (physicsBallDTO.y <= 0) {
+            controller.eventManager(Events.North_Reached);
+        }else if(physicsBallDTO.y + diameter >= workspaceHeight){
+            controller.eventManager(Events.South_Reached);
+        }
+
     }
 }

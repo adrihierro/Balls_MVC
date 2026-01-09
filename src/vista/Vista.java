@@ -1,8 +1,7 @@
 package vista;
 
-import physicsBall.PhysicsBallDTO;
+import controller.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
@@ -11,17 +10,18 @@ import java.awt.event.ActionListener;
 public class Vista extends JFrame {
 
     private ControlPanel controlPanel;
-    private Viewer viewer;
     private DataPanel datapanel;
+    private Controller controller;
+    private Viewer viewer;
 
-    public Vista() {
+    public Vista(Controller controller) {
+        this.controller = controller;
         this.controlPanel = new ControlPanel();
-        this.viewer = new Viewer();
         this.datapanel = new DataPanel();
+        this.viewer = new Viewer(this);
 
         setupFrame();
         setupLayout();
-        initialize();
     }
 
     //Jframe
@@ -32,7 +32,7 @@ public class Vista extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame. MAXIMIZED_BOTH);
     }
 
     //setup Layout config
@@ -42,8 +42,8 @@ public class Vista extends JFrame {
         // ControlPanel
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 0.3;
-        gbc.weighty = 0.3;
+        gbc.weightx = 0.15;
+        gbc. weighty = 0.3;
         gbc.fill = GridBagConstraints.BOTH;
         add(controlPanel, gbc);
 
@@ -61,17 +61,16 @@ public class Vista extends JFrame {
         // Viewer
         gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.gridheight = 3;
-        gbc.weightx = 0.7;
+        gbc. gridheight = 3;
+        gbc.weightx = 0.85;  // Aumentado de 0.7 a 0.85
         gbc.weighty = 1.0;
         gbc. fill = GridBagConstraints. BOTH;
         add(viewer, gbc);
     }
 
-    private void initialize() {
-        updateNumPelotas(0);
-        viewer.start();
-        mostrarPelotas(new ArrayList<>());
+    public void renderBalls(){
+        List<BallRenderInfoDTO> balls = controller.getBallRenderables();
+        viewer.updateRenderData(balls);
     }
 
     /**
@@ -79,59 +78,37 @@ public class Vista extends JFrame {
      */
     public void display() {
         setVisible(true);
+
+        viewer.setSize(viewer.getParent().getSize());
+        viewer.setPreferredSize(viewer.getParent().getSize());
+        viewer.revalidate();
+
+        viewer.start();
     }
 
-    // Getters
-
-    public int getViewerWidth() {
-        return viewer.getWidth();
+    public void updatePelotas(int numpelotas){
+        datapanel.setNumpelotas(numpelotas);
     }
-
-    public int getViewerHeight() {
-        return viewer.getHeight();
-    }
-
-    //update Methods
-
-    public void updateNumPelotas(int numPelotas) {
-        datapanel.setNumpelotas(numPelotas);
-    }
-
-    public void setPlayerModeActive(boolean active) {
-        if (active) {
-            controlPanel.disablebutton();
-        } else {
-            controlPanel.enablebutton();
-        }
-    }
-
-    public void mostrarPelotas(List<PhysicsBallDTO> balls) {
-        viewer.setBalls(balls);
-    }
-
-    public void setPlayer(PhysicsBallDTO player) {
-        viewer.setPlayer(player);
-    }
-
-    //listeners
 
     public void addNewPelotaListener(ActionListener listener) {
-        controlPanel. btnAddBall.addActionListener(listener);
+        controlPanel.btnAddBall.addActionListener(listener);
     }
 
-    public void addnewPauseListener(ActionListener listener) {
-        controlPanel.btnpause. addActionListener(listener);
-    }
-
-    public void addNewPlayListener(ActionListener listener) {
-        controlPanel.btnPlay.addActionListener(listener);
-    }
-
-    public void addNewRestartlistener(ActionListener listener) {
+    public void RestartListener(ActionListener listener){
         controlPanel.btnRestart.addActionListener(listener);
     }
 
-    public void generatePJ1(ActionListener listener) {
-        controlPanel.btnGenrarPJ1.addActionListener(listener);
+    public void PauseListener(ActionListener listener){
+        controlPanel.btnpause.addActionListener(listener);
     }
+
+    public void startListener(ActionListener listener){
+        controlPanel.btnPlay.addActionListener(listener);
+    }
+
+    public void updateWorkspaceSize(int width, int height) {
+        controller.updateWorkspaceSize(width, height);
+    }
+
+
 }

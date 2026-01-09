@@ -1,7 +1,11 @@
 package physicsBall;
 
 public interface PhysicEngineInterface {
-    public abstract void actualizar(PhysicsBallDTO ball, int viewerWidth, int viewerHeight);
+
+    /**
+     *
+     */
+    public abstract PhysicsBallDTO newPosition(PhysicsBallDTO ball,int width,int height);
 
 
 
