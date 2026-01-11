@@ -2,12 +2,14 @@ package vista;
 
 import controller.Controller;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class Vista extends JFrame {
+public class Vista extends JFrame implements KeyListener {
 
     private ControlPanel controlPanel;
     private DataPanel datapanel;
@@ -83,6 +85,11 @@ public class Vista extends JFrame {
         viewer.setPreferredSize(viewer.getParent().getSize());
         viewer.revalidate();
 
+
+        viewer.setFocusable(true);
+        viewer.requestFocusInWindow();
+        viewer.addKeyListener(this);
+
         viewer.start();
     }
 
@@ -102,6 +109,13 @@ public class Vista extends JFrame {
         controlPanel.btnpause.addActionListener(listener);
     }
 
+    public void GeneratePJ(ActionListener listener){
+        controlPanel.btnGenrarPJ1.addActionListener(listener);
+    }
+
+
+
+
     public void startListener(ActionListener listener){
         controlPanel.btnPlay.addActionListener(listener);
     }
@@ -111,4 +125,28 @@ public class Vista extends JFrame {
     }
 
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP -> controller.getMoveUP();
+            case KeyEvent.VK_DOWN -> controller.getMoveDown();
+            case KeyEvent.VK_LEFT -> controller.getMoveLeft();
+            case KeyEvent.VK_RIGHT -> controller.getMoveRight();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
+
+    public PlayerRenderInfoDTO getPlayerRenderInfo(){
+        return controller.getPlayerRenderInfo();
+    }
 }

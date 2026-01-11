@@ -3,6 +3,7 @@ package controller;
 import model.*;
 import physicsBall.PhysicsBallDTO;
 import vista.BallRenderInfoDTO;
+import vista.PlayerRenderInfoDTO;
 import vista.Vista;
 import model.Events;
 
@@ -38,6 +39,11 @@ public class Controller {
             model.setState(State.Restart);
             model.Restart();
         });
+
+        vista.GeneratePJ(e -> {
+            model.generatePlayer();
+            System.out.println("FUnciona");
+        });
     }
 
     private void HandleAddBall(){
@@ -64,6 +70,16 @@ public class Controller {
         return renderBalls;
     }
 
+    public PlayerRenderInfoDTO getPlayerRenderInfo(){
+        Player p = model.getPlayer();
+        System.out.println("Controller: model.getPlayer() = " + p);
+        if (p == null){
+            return null;
+        }
+
+        PhysicsBallDTO dto = p.getPhysicsDTO();
+        return new PlayerRenderInfoDTO(dto.x, dto.y, dto.radius);
+    }
 
     public void eventManager(Events events){
 
@@ -81,4 +97,17 @@ public class Controller {
         vista.updatePelotas(numPelotas);
     }
 
+    public void getMoveLeft(){
+        model.moveLeft();
+    }
+
+    public void getMoveUP(){
+        model.moveUP();
+    }
+    public void getMoveDown(){
+        model.moveDown();
+    }
+    public void getMoveRight(){
+        model.moveRight();
+    }
 }

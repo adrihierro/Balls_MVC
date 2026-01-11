@@ -18,6 +18,7 @@ public class Model {
     private final Controller controller;
     PhysicEngineInterface motor = new BasicPhysicsEngine();
     private State state;
+    private Player player;
 
 
     public Model(Controller controller) {
@@ -29,6 +30,25 @@ public class Model {
         this.workspaceWidth = width;
         this.workspaceHeight = height;
     }
+
+    public Player generatePlayer(){
+        int startX = workspaceWidth / 2;
+        int startY = workspaceHeight / 2;
+        int radius = 10;
+
+        PhysicsBallDTO dto = new PhysicsBallDTO( startX, startY, 0, 0,0,0,radius);
+
+        this.player = new Player(this, motor, dto);
+        return this.player;
+    }
+
+
+
+
+
+
+
+
 
 
     public int getWorkspaceWidth() {
@@ -86,7 +106,6 @@ public class Model {
 
         int diameter = physicsBallDTO.radius * 2;
 
-
         if (physicsBallDTO.x <= 0){
            controller.eventManager(Events.West_Reached);
         } else if (physicsBallDTO.x + diameter >= workspaceWidth) {
@@ -98,6 +117,25 @@ public class Model {
         }else if(physicsBallDTO.y + diameter >= workspaceHeight){
             controller.eventManager(Events.South_Reached);
         }
+    }
 
+    public void moveLeft(){
+        player.moveLeft();
+    }
+
+    public void moveUP(){
+        player.moveUp();
+    }
+
+    public void moveRight(){
+        player.moveRight();
+    }
+
+    public void moveDown(){
+        player.moveDown();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

@@ -70,6 +70,7 @@ public class Viewer extends Canvas implements Runnable, KeyListener {
             int h = getHeight();
             vista.updateWorkspaceSize(w,h);
 
+
             vista.renderBalls();
 
             BufferStrategy bufferStrategy = getBufferStrategy();
@@ -92,6 +93,19 @@ public class Viewer extends Canvas implements Runnable, KeyListener {
                 g.setColor(Color.BLUE);
                 g.fillOval(b.x, b.y, b.radius * 2, b.radius * 2);
             }
+
+            PlayerRenderInfoDTO p = vista.getPlayerRenderInfo();
+
+            if (p != null) {
+                g2d.drawImage(
+                        spriteManager.getPlayerIMG(),
+                        p.x,
+                        p.y,
+                        p.radius * 2,
+                        p.radius * 2,
+                        this );
+            }
+
 
             g.dispose();
             bufferStrategy.show();

@@ -20,4 +20,18 @@ public class PhysicsBallDTO {
         this.ay = ay;
         this.radius = radius;
     }
+
+
+    public PhysicsBallDTO withPosition(int newX, int newY) {
+        return new PhysicsBallDTO(
+                newX,
+                newY,
+                this.vx,
+                this.vy,
+                this.ax,
+                this.ay,
+                this.radius
+        );
+    }
+
 }
