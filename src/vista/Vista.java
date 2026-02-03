@@ -1,6 +1,7 @@
 package vista;
 
 import controller.Controller;
+import model.Events;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -44,7 +45,7 @@ public class Vista extends JFrame implements KeyListener {
         // ControlPanel
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 0.15;
+        gbc.weightx = 0.08;
         gbc. weighty = 0.3;
         gbc.fill = GridBagConstraints.BOTH;
         add(controlPanel, gbc);
@@ -64,7 +65,7 @@ public class Vista extends JFrame implements KeyListener {
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc. gridheight = 3;
-        gbc.weightx = 0.85;  // Aumentado de 0.7 a 0.85
+        gbc.weightx = 0.92;  // Aumentado de 0.7 a 0.85
         gbc.weighty = 1.0;
         gbc. fill = GridBagConstraints. BOTH;
         add(viewer, gbc);
@@ -113,9 +114,6 @@ public class Vista extends JFrame implements KeyListener {
         controlPanel.btnGenrarPJ1.addActionListener(listener);
     }
 
-
-
-
     public void startListener(ActionListener listener){
         controlPanel.btnPlay.addActionListener(listener);
     }
@@ -143,10 +141,25 @@ public class Vista extends JFrame implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        switch (e.getKeyCode()){
+            case KeyEvent.VK_UP -> controller.getStopY();
+            case KeyEvent.VK_DOWN -> controller.getStopY();
+            case KeyEvent.VK_LEFT -> controller.getStopX();
+            case KeyEvent.VK_RIGHT -> controller.getStopX();
+        }
     }
 
     public PlayerRenderInfoDTO getPlayerRenderInfo(){
         return controller.getPlayerRenderInfo();
+    }
+
+    public void CollisionDetector(Events events,int x,int y){
+        System.out.println("Vista:Colision: --> " + events);
+
+        viewer.onCollisionEvent(events,x,y);
+    }
+
+    public void applyWorld(WorldRenderableDTO worldDTO){
+        viewer.setWorld(worldDTO);
     }
 }

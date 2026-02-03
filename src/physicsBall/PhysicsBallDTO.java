@@ -22,16 +22,8 @@ public class PhysicsBallDTO {
     }
 
 
-    public PhysicsBallDTO withPosition(int newX, int newY) {
-        return new PhysicsBallDTO(
-                newX,
-                newY,
-                this.vx,
-                this.vy,
-                this.ax,
-                this.ay,
-                this.radius
-        );
+    public PhysicsBallDTO withVelocity(int newVx, int newVy) {
+        return new PhysicsBallDTO(this.x, this.y, newVx, newVy, this.ax, this.ay, this.radius);
     }
 
 }

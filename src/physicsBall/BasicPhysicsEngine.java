@@ -9,8 +9,8 @@ public class BasicPhysicsEngine implements PhysicEngineInterface {
         int vx = ball.vx+ ball.ax;
         int vy = ball.vy + ball.ay;
 
-        int x = ball.x + ball.vx;
-        int y = ball.y + ball.vy;
+        int x = ball.x + vx;
+        int y = ball.y + vy;
 
         int radius = ball.radius;
 

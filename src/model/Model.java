@@ -6,13 +6,12 @@ import physicsBall.BasicPhysicsEngine;
 import physicsBall.PhysicEngineInterface;
 import physicsBall.PhysicsBallDTO;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Model {
-    private List<Ball> balls = new ArrayList<>();
+    private List<Asteroid> balls = new ArrayList<>();
     private int workspaceWidth;
     private int workspaceHeight;
     private final Controller controller;
@@ -31,7 +30,7 @@ public class Model {
         this.workspaceHeight = height;
     }
 
-    public Player generatePlayer(){
+    public void generatePlayer(){
         int startX = workspaceWidth / 2;
         int startY = workspaceHeight / 2;
         int radius = 10;
@@ -39,17 +38,19 @@ public class Model {
         PhysicsBallDTO dto = new PhysicsBallDTO( startX, startY, 0, 0,0,0,radius);
 
         this.player = new Player(this, motor, dto);
-        return this.player;
+        this.player.start();
     }
 
+    /**
+     * Obtiene datos del jugador como DTO
+     */
+    public PlayerDTO getPlayerData() {
+        if (player == null) {
+            return null;
+        }
 
-
-
-
-
-
-
-
+        return player.toDTO();
+    }
 
     public int getWorkspaceWidth() {
         return workspaceWidth;
@@ -70,7 +71,7 @@ public class Model {
     public List<PhysicsBallDTO> getBalls() {
         List<PhysicsBallDTO> result = new ArrayList<>();
 
-        for (Ball b : balls){
+        for (Asteroid b : balls){
             result.add(b.getPhysics());
         }
 
@@ -80,26 +81,25 @@ public class Model {
     public void createRandomBall() {
         int x = (int) (Math.random() * workspaceWidth);
         int y = (int) (Math.random() * workspaceHeight);;
-        int vx = (int) (Math.random() * 5 + 1);  // velocidad entre 1 y 5
+        int vx = (int) (Math.random() * 3 + 1);  // velocidad entre 1 y 5
         int vy = (int) (Math.random() * 5 + 1);
         int radius = (int) (Math.random() * 16) + 5;  // radio entre 5 y 20
 
         addBall(x, y, vx, vy, radius, motor);
-
     }
 
     // ---------- Crear bola normal ----------
     private void addBall(int x, int y, int vx, int vy, int radius,
                          PhysicEngineInterface motor) {
-        Ball ball = new Ball(x, y, vx, vy, radius, this, motor);
+        Asteroid ball = new Asteroid(x, y, vx, vy, radius, this, motor);
         balls.add(ball);
     }
 
     public void Restart(){
-        if (state == state.Restart) {
-            balls.clear();
-            state = state.Started;
+        for (Asteroid b : balls){
+            b.kill();
         }
+        balls.clear();
     }
 
     public void eventDetector(PhysicsBallDTO physicsBallDTO){
@@ -107,15 +107,15 @@ public class Model {
         int diameter = physicsBallDTO.radius * 2;
 
         if (physicsBallDTO.x <= 0){
-           controller.eventManager(Events.West_Reached);
+           controller.eventManager(Events.West_Reached, physicsBallDTO.x, physicsBallDTO.y);
         } else if (physicsBallDTO.x + diameter >= workspaceWidth) {
-            controller.eventManager(Events.East_Reached);
+            controller.eventManager(Events.East_Reached, physicsBallDTO.x, physicsBallDTO.y);
         }
 
         if (physicsBallDTO.y <= 0) {
-            controller.eventManager(Events.North_Reached);
+            controller.eventManager(Events.North_Reached,physicsBallDTO.x,physicsBallDTO.y);
         }else if(physicsBallDTO.y + diameter >= workspaceHeight){
-            controller.eventManager(Events.South_Reached);
+            controller.eventManager(Events.South_Reached, physicsBallDTO.x, physicsBallDTO.y);
         }
     }
 
@@ -137,5 +137,13 @@ public class Model {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void StopX() {
+        player.stopX();
+    }
+
+    public void StopY(){
+        player.stopY();
     }
 }

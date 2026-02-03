@@ -3,7 +3,7 @@ package vista;
 import java.awt.*;
 
 /**
- * Dto
+ * Dto to drawing balls
  */
 
 public class BallRenderInfoDTO {

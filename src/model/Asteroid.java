@@ -4,15 +4,15 @@ import controller.State;
 import physicsBall.PhysicEngineInterface;
 import physicsBall.PhysicsBallDTO;
 
-public class Ball implements Runnable {
+public class Asteroid implements Runnable {
     private PhysicsBallDTO physicsDTO;
     private final PhysicEngineInterface motor;
     private final Model model;
     private Thread thread;
+    private boolean alive = true;
 
-
-    public Ball(int x, int y, int vx, int vy, int radius,
-                Model model, PhysicEngineInterface motor) {
+    public Asteroid(int x, int y, int vx, int vy, int radius,
+                    Model model, PhysicEngineInterface motor) {
         if (motor == null) {
             throw new IllegalArgumentException("Motor físico no puede ser null");
         }
@@ -34,10 +34,18 @@ public class Ball implements Runnable {
         return physicsDTO;
     }
 
+
+
+    public void kill(){
+        alive = false;
+    }
+
+
+
     // ---------- Bucle de animación ----------
     @Override
     public void run() {
-        while (true) {
+        while (alive) {
 
             if (model.getState() == State.Started) {
                 int workspaceWidth = model.getWorkspaceWidth();
@@ -46,11 +54,6 @@ public class Ball implements Runnable {
                 physicsDTO = motor.newPosition(physicsDTO,workspaceWidth,workspaceHeight);
                 model.eventDetector(physicsDTO);
             }
-
-
-            
-
-
 
             try {
                 Thread.sleep(15);
